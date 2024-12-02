@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Results of searching for CVEs that include word: "{{ query }}" in description</title>
+    <style>
+        li {
+            margin-bottom: 30px;  
+            padding-bottom: 10px; 
+        }
+    </style>
+</head>
+<body style="background-color:rgb(7, 7, 7);">
+    <h1 style="color: aliceblue;">Results of searching for CVEs that include word: "{{ query }}" in description</h1>
+    <p style="color:rgb(222, 137, 20);">CVEs that include word: "{{ query }}" in description:</p>
+    {% if result_of_searching %}
+        <ul>
+            {% for vuln in result_of_searching %}
+                <li>
+                <strong style="color:rgb(222, 137, 20);">CVE ID:</strong> <span style="color:aliceblue;">{{ vuln.cveID }}</span> <br>
+                <strong style="color:rgb(222, 137, 20);">Vendor Project:</strong> <span style="color:aliceblue;">{{ vuln.vendorProject }}</span> <br>
+                <strong style="color:rgb(222, 137, 20);">Product:</strong> <span style="color:aliceblue;">{{ vuln.product }}</span> <br>
+                <strong style="color:rgb(222, 137, 20);">Vulnerability Name:</strong> <span style="color:aliceblue;">{{ vuln.vulnerabilityName }}</span> <br>
+                <strong style="color:rgb(222, 137, 20);">Date Added:</strong> <span style="color:aliceblue;">{{ vuln.dateAdded }}</span> <br>
+                <strong style="color:rgb(222, 137, 20);">Short Description:</strong> <span style="color:aliceblue;">{{ vuln.shortDescription }}</span> <br>
+                <strong style="color:rgb(222, 137, 20);">Required Action:</strong> <span style="color:aliceblue;">{{ vuln.requiredAction }}</span> <br>
+                <strong style="color:rgb(222, 137, 20);">Due Date:</strong> <span style="color:aliceblue;">{{ vuln.dueDate }}</span> <br>
+                <strong style="color:rgb(222, 137, 20);">Known Ransomware Campaign Use:</strong> <span style="color:aliceblue;">{{ vuln.knownRansomwareCampaignUse }}</span> <br>
+                <strong style="color:rgb(222, 137, 20);">Notes:</strong> <span><a href="{{ vuln.notes }}" style="color: aliceblue;">{{ vuln.notes }}</a></span> <br>
+                <strong style="color:rgb(222, 137, 20);">CWEs:</strong> <span style="color:aliceblue;">
+                    {% if vuln.cwes %}
+                        {{ vuln.cwes | join(', ') }}
+                    {% else %}
+                        None
+                    {% endif %}
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p style="color: rgb(222, 137, 20);">Threre are no vulnerabilities that include your query.</p>
+    {% endif %}
+</body>
+</html>
