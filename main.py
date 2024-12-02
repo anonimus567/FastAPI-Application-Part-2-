@@ -1,4 +1,4 @@
-from elasticsearch import Elasticsearch, exceptions as es_exceptions
+from elasticsearch import Elasticsearch
 from fastapi import FastAPI, Query, HTTPException
 import json
 import re
@@ -16,11 +16,11 @@ es_url = os.environ.get('ES_URL')
 es_token = os.environ.get('ES_TOKEN')
 client = Elasticsearch(es_url, api_key=es_token)
 
+my_users = {'mariana': {'username': 'mariana', 'position': 'developer'}}
+
 class User(BaseModel):
     username: str
     position: str
-
-my_users = {}
 
 @app.post('/users')
 def create_user(user: User):
@@ -59,22 +59,16 @@ def create_cve_index():
             }
         client.create(index="cve_index", id=str(uuid4()), body=vuln_data)
     response = client.search(index="cve_index", body={
-    "size": 100,
-    "query": {
-        "range": {
-            "dateAdded": {
-                "lte": "2024-11-30"  # Дата починаючи з 30 числа
-            }
-        }
-    }})
+        "size": 100,
+        "query": {"match_all": {}},
+        "sort": [{"dateAdded": {"order": "desc"}}]  
+    })
     return [doc['_source'] for doc in response.get('hits', {}).get('hits', [])]
 
-# Отримання всіх CVE за останні 5 днів
 @app.get("/get/all", response_class=HTMLResponse)
 def get_all_cves_for_last_five_days(request: Request):
     response = client.search(index="cve_index", 
         body={
-            "size": 40,
             "query": {
                 "range": {
                 "dateAdded": {
@@ -90,7 +84,6 @@ def get_all_cves_for_last_five_days(request: Request):
     {"request": request, "result_of_searching": result_of_searching},
 )
 
-# Отримання останніх 10 CVE
 @app.get("/get/new", response_class=HTMLResponse)
 def get_ten_latest_cve(request: Request):
     response = client.search(index="cve_index", 
@@ -116,7 +109,6 @@ def get_ten_known_cve(request: Request):
       
         response = client.search(index="cve_index", 
         body={
-            "size": 20,
                 "query":{
                     "bool": {
                         "must": [
@@ -138,7 +130,6 @@ def get_results_with_query(request: Request, query: str):
         )
     response = client.search(index="cve_index",
     body = {
-    "size": 20,
     "query": {
         "bool": {
             "must": [
