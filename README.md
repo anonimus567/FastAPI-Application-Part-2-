@@ -1,4 +1,4 @@
-# FastAPI-Application-Part-2-
+# FastAPI-Application-Part-2
 This is my Homework FastAPI Application Part 2
 In this homework I added to the FastAPI application the ability to save reports to the elastic database and modified the existing endpoints in such a way that the output from the endpoints of the application specified in part 1 of the task takes place from the database. Moreover, I added new endpoint /init-db -  that initializes the database with data from the file.
 ## Code for creating new  /init-db endpoint
